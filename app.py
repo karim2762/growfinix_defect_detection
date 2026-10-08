@@ -1,4 +1,5 @@
 import sys
+import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -13,6 +14,25 @@ from src.model import load_checkpoint
 
 st.set_page_config(page_title="Defect Detector", layout="centered")
 
+MODEL_URL = "https://github.com/karim2762/growfinix_defect_detection-main/releases/download/v1/best_model.pt"
+
+
+def ensure_model() -> None:
+    """Download the trained model from the GitHub Release if it isn't on disk."""
+    if CHECKPOINT_PATH.exists():
+        return
+    CHECKPOINT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    tmp = CHECKPOINT_PATH.with_suffix(".tmp")
+    try:
+        with st.spinner("Downloading model (first run only, ~45 MB)..."):
+            urllib.request.urlretrieve(MODEL_URL, tmp)
+        tmp.replace(CHECKPOINT_PATH)
+    except Exception as exc:
+        tmp.unlink(missing_ok=True)
+        st.error(f"Could not download the model: {exc}\n\n"
+                 "Check that the GitHub Release `v1` exists, is published, and the repo is public.")
+        st.stop()
+
 
 @st.cache_resource
 def get_model(path: str, mtime: float):
@@ -22,9 +42,7 @@ def get_model(path: str, mtime: float):
 st.title("Product Defect Detector")
 st.caption("Transfer learning (ResNet) + Grad-CAM explanations")
 
-if not CHECKPOINT_PATH.exists():
-    st.error("No trained model found. Train one first:\n\n```\npython download_data.py\npython train.py\n```")
-    st.stop()
+ensure_model()
 
 model, ckpt = get_model(str(CHECKPOINT_PATH), CHECKPOINT_PATH.stat().st_mtime)
 default_threshold = float(ckpt.get("decision_threshold", 0.5))
