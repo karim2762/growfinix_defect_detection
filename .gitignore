@@ -1,7 +1,10 @@
-# Big / generated files: re-create them with the commands in README.md
+# Training data (big, not needed for hosting)
 data/raw/
 data/_download/
-models/*.pt
+
+# Keep models/best_model.pt tracked so the hosted app can load it
+
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
 .venv/
