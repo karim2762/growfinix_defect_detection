@@ -1,0 +1,7 @@
+# Big / generated files: re-create them with the commands in README.md
+data/raw/
+data/_download/
+models/*.pt
+__pycache__/
+.ipynb_checkpoints/
+.venv/
