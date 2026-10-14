@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ```bash
 python download_data.py     # Kaggle data, or synthetic data if no credentials
 python train.py             # trains, prints metrics, saves model and plots
-streamlit run app.py        # web demo
+streamlit run streamlit_app.py # web demo
 ```
 
 ## Kaggle data
